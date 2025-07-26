@@ -1,0 +1,521 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Market Analysis - Real Estate GPT</title>
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='css/styles.css') }}"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"
+    />
+    <style>
+      :root {
+        --primary: #10b981;
+        --primary-dark: #059669;
+        --primary-light: #6ee7b7;
+        --secondary: #2d3748;
+        --text-dark: #1a202c;
+        --text-medium: #4a5568;
+        --text-light: #718096;
+        --bg-light: #f7fafc;
+        --bg-medium: #e2e8f0;
+        --success: #48bb78;
+        --warning: #ed8936;
+      }
+
+      .property-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+        gap: 2rem;
+        padding: 2rem;
+        background-color: var(--bg-light);
+      }
+
+      .property-card {
+        background: white;
+        border-radius: 16px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+        overflow: hidden;
+        transition: all 0.3s ease;
+        border: 1px solid #e5e7eb;
+      }
+
+      .property-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+      }
+
+      .property-image {
+        width: 100%;
+        height: 240px;
+        object-fit: cover;
+      }
+
+      .property-details {
+        padding: 1.5rem;
+      }
+
+      .property-title {
+        font-size: 1.5rem;
+        font-weight: 600;
+        margin-bottom: 0.5rem;
+        color: var(--text-dark);
+      }
+
+      .property-location {
+        color: var(--text-light);
+        margin-bottom: 1.5rem;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        font-size: 0.95rem;
+      }
+
+      .property-location i {
+        color: var(--primary);
+        font-size: 1.1rem;
+      }
+
+      .property-stats {
+        display: flex;
+        justify-content: flex-start;
+        gap: 2rem;
+        margin-bottom: 1.5rem;
+        color: var(--primary);
+      }
+
+      .stat {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        font-size: 0.95rem;
+      }
+
+      .stat i {
+        color: var(--primary);
+        font-size: 1.1rem;
+      }
+
+      .property-price {
+        font-size: 1.75rem;
+        font-weight: 700;
+        color: var(--text-dark);
+        margin-bottom: 1.5rem;
+      }
+
+      .property-amenities {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.75rem;
+        margin-bottom: 2rem;
+      }
+
+      .amenity-tag {
+        background: transparent;
+        padding: 0.5rem 1rem;
+        border-radius: 999px;
+        font-size: 0.9rem;
+        color: var(--text-medium);
+        border: 1px solid #e5e7eb;
+        transition: all 0.3s ease;
+      }
+
+      .property-cta {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 1rem;
+      }
+
+      .view-details,
+      .virtual-tour {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        padding: 0.75rem 1rem;
+        border-radius: 8px;
+        text-decoration: none;
+        font-weight: 500;
+        font-size: 0.95rem;
+        transition: all 0.3s ease;
+      }
+
+      .view-details {
+        background: var(--primary);
+        color: white;
+        border: 1px solid var(--primary);
+      }
+
+      .view-details:hover {
+        background: var(--primary-dark);
+        border-color: var(--primary-dark);
+      }
+
+      .virtual-tour {
+        color: var(--primary);
+        background: transparent;
+        border: 1px solid var(--primary);
+      }
+
+      .virtual-tour i {
+        margin-right: 8px;
+        font-size: 1.1rem;
+      }
+
+      .virtual-tour:hover {
+        background: var(--primary);
+        color: white;
+      }
+
+      .virtual-tour:hover i {
+        color: white;
+      }
+
+      @media (max-width: 768px) {
+        .property-grid {
+          grid-template-columns: 1fr;
+          padding: 1rem;
+        }
+
+        .property-stats {
+          gap: 1rem;
+        }
+
+        .property-cta {
+          flex-direction: column;
+        }
+
+        .view-details,
+        .virtual-tour {
+          width: 100%;
+        }
+      }
+
+      /* Dark mode support */
+      @media (prefers-color-scheme: dark) {
+        :root {
+          --primary: #6ee7b7;
+          --primary-dark: #10b981;
+          --primary-light: #059669;
+          --bg-light: #2d3748;
+          --bg-medium: #4a5568;
+          --text-dark: #f7fafc;
+          --text-medium: #e2e8f0;
+          --text-light: #a0aec0;
+        }
+
+        .property-card {
+          background: #1a202c;
+        }
+
+        .amenity-tag {
+          border-color: var(--primary);
+        }
+
+        .amenity-tag:hover {
+          background: var(--primary);
+          color: var(--text-dark);
+        }
+
+        .view-details {
+          box-shadow: 0 2px 4px rgba(110, 231, 183, 0.2);
+        }
+
+        .view-details:hover {
+          box-shadow: 0 4px 6px rgba(110, 231, 183, 0.3);
+        }
+
+        .virtual-tour {
+          border-color: var(--primary);
+        }
+
+        .virtual-tour:hover {
+          background: var(--primary);
+          color: var(--text-dark);
+        }
+
+        .virtual-tour:hover i {
+          color: var(--text-dark);
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <!-- Navigation -->
+    <nav class="navbar">
+      <div class="nav-content">
+        <a href="/" class="nav-logo">Real Estate GPT</a>
+        <ul class="nav-links">
+          <li><a href="/">Home</a></li>
+          <li><a href="{{ url_for('search') }}">Property Search</a></li>
+          <li>
+            <a href="{{ url_for('market') }}" class="active">Market Analysis</a>
+          </li>
+          <li><a href="{{ url_for('about') }}">About</a></li>
+          <li><a href="{{ url_for('contact') }}">Contact</a></li>
+        </ul>
+      </div>
+    </nav>
+
+    <!-- Market Overview -->
+    <section class="market-overview">
+      <div class="market-container">
+        <h1>Chennai Real Estate Market Analysis</h1>
+        <p>
+          Get insights into Chennai's real estate market trends and investment
+          opportunities
+        </p>
+
+        <!-- Market Stats -->
+        <div class="market-stats">
+          <div class="stat-card">
+            <i class="fas fa-rupee-sign"></i>
+            <h3>Average Price</h3>
+            <p class="stat-value">₹7,500/sqft</p>
+            <p class="stat-change positive">+8.5% YoY</p>
+          </div>
+          <div class="stat-card">
+            <i class="fas fa-home"></i>
+            <h3>Properties Listed</h3>
+            <p class="stat-value">1,234</p>
+            <p class="stat-change positive">+12% MoM</p>
+          </div>
+          <div class="stat-card">
+            <i class="fas fa-map-marker-alt"></i>
+            <h3>Top Location</h3>
+            <p class="stat-value">OMR</p>
+            <p class="stat-note">High Demand</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Featured Properties -->
+    <section class="featured-properties">
+      <div class="container">
+        <h2>Featured Properties</h2>
+        <div class="property-grid">
+          <!-- Property Card 1 -->
+          <div class="property-card">
+            <img
+              src="https://images.unsplash.com/photo-1580587771525-78b9dba3b914"
+              alt="Luxury Apartment"
+              class="property-image"
+            />
+            <div class="property-details">
+              <h3 class="property-title">Adroit District S</h3>
+              <p class="property-location">
+                <i class="fas fa-map-marker-alt"></i>
+                Thoraipakkam, Chennai
+              </p>
+              <div class="property-stats">
+                <div class="stat">
+                  <i class="fas fa-bed"></i>
+                  <span>4 BHK</span>
+                </div>
+                <div class="stat">
+                  <i class="fas fa-vector-square"></i>
+                  <span>2165 sq.ft.</span>
+                </div>
+              </div>
+              <div class="property-price">₹65 Lakhs</div>
+              <div class="property-amenities">
+                <span class="amenity-tag">Yoga Deck</span>
+                <span class="amenity-tag">Multipurpose Hall</span>
+                <span class="amenity-tag">24/7 Power Backup</span>
+              </div>
+              <div class="property-cta">
+                <a href="#" class="view-details">View Details</a>
+                <a href="https://virtualtour6.com" class="virtual-tour">
+                  <i class="fas fa-vr-cardboard"></i>
+                  Virtual Tour
+                </a>
+              </div>
+            </div>
+          </div>
+
+          <!-- Property Card 2 -->
+          <div class="property-card">
+            <img
+              src="https://images.unsplash.com/photo-1512917774080-9991f1c4c750"
+              alt="Modern Villa"
+              class="property-image"
+            />
+            <div class="property-details">
+              <h3 class="property-title">Casagrand Supremus</h3>
+              <p class="property-location">
+                <i class="fas fa-map-marker-alt"></i>
+                Padur, Chennai
+              </p>
+              <div class="property-stats">
+                <div class="stat">
+                  <i class="fas fa-bed"></i>
+                  <span>2 BHK</span>
+                </div>
+                <div class="stat">
+                  <i class="fas fa-vector-square"></i>
+                  <span>1460 sq.ft.</span>
+                </div>
+              </div>
+              <div class="property-price">₹112 Lakhs</div>
+              <div class="property-amenities">
+                <span class="amenity-tag">Gym</span>
+                <span class="amenity-tag">Swimming Pool</span>
+                <span class="amenity-tag">Clubhouse</span>
+              </div>
+              <div class="property-cta">
+                <a href="#" class="view-details">View Details</a>
+                <a href="https://virtualtour9.com" class="virtual-tour">
+                  <i class="fas fa-vr-cardboard"></i>
+                  Virtual Tour
+                </a>
+              </div>
+            </div>
+          </div>
+
+          <!-- Property Card 3 -->
+          <div class="property-card">
+            <img
+              src="https://images.unsplash.com/photo-1600585154340-be6161a56a0c"
+              alt="Premium Apartment"
+              class="property-image"
+            />
+            <div class="property-details">
+              <h3 class="property-title">Hiranandani Anchorage</h3>
+              <p class="property-location">
+                <i class="fas fa-map-marker-alt"></i>
+                Siruseri, Chennai
+              </p>
+              <div class="property-stats">
+                <div class="stat">
+                  <i class="fas fa-bed"></i>
+                  <span>3 BHK</span>
+                </div>
+                <div class="stat">
+                  <i class="fas fa-vector-square"></i>
+                  <span>952 sq.ft.</span>
+                </div>
+              </div>
+              <div class="property-price">₹101 Lakhs</div>
+              <div class="property-amenities">
+                <span class="amenity-tag">Gym</span>
+                <span class="amenity-tag">Swimming Pool</span>
+                <span class="amenity-tag">Security</span>
+              </div>
+              <div class="property-cta">
+                <a href="#" class="view-details">View Details</a>
+                <a href="https://virtualtour5.com" class="virtual-tour">
+                  <i class="fas fa-vr-cardboard"></i>
+                  Virtual Tour
+                </a>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Market Trends -->
+    <section class="market-trends">
+      <div class="trends-container">
+        <div class="trends-header">
+          <h2>Price Trends</h2>
+          <div class="trend-filters">
+            <button class="trend-btn active">1Y</button>
+            <button class="trend-btn">6M</button>
+            <button class="trend-btn">3M</button>
+            <button class="trend-btn">1M</button>
+          </div>
+        </div>
+        <div class="trend-chart">
+          <!-- Chart will be added here -->
+          <div class="chart-placeholder">
+            <i class="fas fa-chart-line"></i>
+            <p>Price trend chart will be displayed here</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Location Analysis -->
+    <section class="location-analysis">
+      <div class="location-container">
+        <h2>Location Analysis</h2>
+        <div class="location-grid">
+          <div class="location-card">
+            <h3>OMR</h3>
+            <div class="location-stats">
+              <p><i class="fas fa-rupee-sign"></i> Avg. Price: ₹7,800/sqft</p>
+              <p><i class="fas fa-chart-line"></i> Growth: +10.2%</p>
+              <p><i class="fas fa-fire"></i> High Demand</p>
+            </div>
+          </div>
+          <div class="location-card">
+            <h3>Karapakkam</h3>
+            <div class="location-stats">
+              <p><i class="fas fa-rupee-sign"></i> Avg. Price: ₹7,200/sqft</p>
+              <p><i class="fas fa-chart-line"></i> Growth: +8.5%</p>
+              <p><i class="fas fa-fire"></i> Medium Demand</p>
+            </div>
+          </div>
+          <div class="location-card">
+            <h3>Sholinganallur</h3>
+            <div class="location-stats">
+              <p><i class="fas fa-rupee-sign"></i> Avg. Price: ₹7,500/sqft</p>
+              <p><i class="fas fa-chart-line"></i> Growth: +9.3%</p>
+              <p><i class="fas fa-fire"></i> High Demand</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Market Insights -->
+    <section class="market-insights">
+      <div class="insights-container">
+        <h2>Market Insights</h2>
+        <div class="insights-grid">
+          <a href="{{ url_for('omr_demand') }}" class="insight-card">
+            <i class="fas fa-chart-line"></i>
+            <h3>Growing Demand in OMR</h3>
+            <p>
+              Explore the rising property demand and growth factors in Old
+              Mahabalipuram Road.
+            </p>
+            <span class="read-more"
+              >Read More <i class="fas fa-arrow-right"></i
+            ></span>
+          </a>
+          <a href="{{ url_for('property_types') }}" class="insight-card">
+            <i class="fas fa-building"></i>
+            <h3>Popular Property Types</h3>
+            <p>
+              Analysis of the most sought-after property configurations and
+              their market share.
+            </p>
+            <span class="read-more"
+              >Read More <i class="fas fa-arrow-right"></i
+            ></span>
+          </a>
+          <a href="{{ url_for('investment_returns') }}" class="insight-card">
+            <i class="fas fa-coins"></i>
+            <h3>Investment Returns</h3>
+            <p>
+              Detailed analysis of rental yields and capital appreciation across
+              locations.
+            </p>
+            <span class="read-more"
+              >Read More <i class="fas fa-arrow-right"></i
+            ></span>
+          </a>
+        </div>
+      </div>
+    </section>
+
+    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+  </body>
+</html>
