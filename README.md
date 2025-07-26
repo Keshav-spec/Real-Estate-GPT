@@ -38,7 +38,6 @@ No explicit license is provided. Please contact the repository owner for usage p
 
 ## Repository Info
 - **Repository:** [Real-Estate-GPT](https://github.com/Keshav-spec/Real-Estate-GPT)
-- **Language:** HTML
 - **Visibility:** Public
 
 ---
